@@ -1,0 +1,11 @@
+recursive-include doc_src *
+recursive-include docs *
+
+recursive-include portfolio/static *
+recursive-include portfolio/templates *
+
+include LICENSE
+include README
+include *.txt
+
+prune example/
