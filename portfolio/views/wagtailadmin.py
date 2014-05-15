@@ -19,7 +19,7 @@ from wagtail.wagtailsnippets.views.snippets import get_snippet_type_name, get_sn
 
 from django.contrib.contenttypes.models import ContentType
 
-from portfolio.models import Project, ProjectCategory, MetaFieldKey, ProjectMetaFieldValue
+from portfolio.models import Project, ProjectCategory, PortfolioMetaFieldKey, ProjectMetaField
 
 def list_projects(request):
     return snippets.list(request, 'portfolio', 'project')
@@ -57,9 +57,9 @@ def add_project(request):
     
     category = ProjectCategory.objects.get(pk=request.GET['category_id'])
     instance = Project(category=category)
-    instance.metafields = [ ProjectMetaFieldValue(key=metafieldkey) \
+    instance.metafields = [ ProjectMetaField(key=metafieldkey) \
         for metafieldkey in \
-        MetaFieldKey.objects.filter(pk__in=category.default_metafields.all().values_list('key',flat=True)) ]
+        PortfolioMetaFieldKey.objects.filter(pk__in=category.default_metafields.all().values_list('key',flat=True)) ]
 
     # IMPROVE: Had to copy and paste to recreate functionality. Everything from
     # here down is from wagtail/wagtailsnippets/views/snippets.py `create` func

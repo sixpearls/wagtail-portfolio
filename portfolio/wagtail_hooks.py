@@ -36,7 +36,7 @@ def construct_main_menu(request, menu_items):
 
     menu_items.append(
         MenuItem(_('--MetaKeys'), 
-        urlresolvers.reverse('wagtailsnippets_list',args=('portfolio','metafieldkey',)), 
+        urlresolvers.reverse('wagtailsnippets_list',args=('portfolio','portfoliometafieldkey',)), 
         classnames='icon icon-redirect',
         order=550)
     )

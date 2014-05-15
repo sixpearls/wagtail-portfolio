@@ -21,7 +21,7 @@ from modelcluster.tags import ClusterTaggableManager
 from taggit.models import Tag, TaggedItemBase
 from categories.models import CategoryBase
 
-class PortfolioImage(Orderable):
+class ProjectImage(Orderable):
     project = ParentalKey('portfolio.Project',related_name='images')
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -35,7 +35,7 @@ class PortfolioImage(Orderable):
         ImageChooserPanel('image'),
     ]
 
-class MetaFieldKey(models.Model):
+class PortfolioMetaFieldKey(models.Model):
     text = models.CharField(max_length=255)
 
     class Meta:
@@ -44,17 +44,17 @@ class MetaFieldKey(models.Model):
     def __unicode__(self):
         return self.text
 
-register_snippet(MetaFieldKey)
+register_snippet(PortfolioMetaFieldKey)
 
-class MetaFieldDefaultKeys(Orderable):
+class ProjectCategoryMetaFieldDefaultKeys(Orderable):
     category = ParentalKey('portfolio.ProjectCategory',related_name='default_metafields')
-    key = models.ForeignKey(MetaFieldKey)
+    key = models.ForeignKey(PortfolioMetaFieldKey)
 
     class Meta:
         verbose_name_plural = "Portfolio Default MetaKeys"
 
     panels=[
-        SnippetChooserPanel('key', MetaFieldKey),
+        SnippetChooserPanel('key', PortfolioMetaFieldKey),
     ]
 
 class ProjectCategory(CategoryBase):
@@ -76,8 +76,8 @@ ProjectCategory.panels = [
 ]
 register_snippet(ProjectCategory)
 
-class ProjectMetaFieldValue(Orderable):
-    key = models.ForeignKey(MetaFieldKey)
+class ProjectMetaField(Orderable):
+    key = models.ForeignKey(PortfolioMetaFieldKey)
     value = models.CharField(max_length=255)
     project = ParentalKey('portfolio.Project',related_name='metafields')
 
