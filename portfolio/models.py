@@ -57,57 +57,40 @@ class ProjectCategoryMetaFieldDefaultKeys(Orderable):
         SnippetChooserPanel('key', PortfolioMetaFieldKey),
     ]
 
-class ProjectCategory(CategoryBase):
-    class Meta:
-        verbose_name_plural = 'Portfolio Categories'
-
-    def get_absolute_url(self):
-        slug = '/'.join(self.get_ancestors(include_self=True).values_list('slug',flat=True))
-        return reverse('portfolio_category_detail', args=(), kwargs={
-            'category_slug': slug,
-        })
-
-ProjectCategory.panels = [
-    FieldPanel('parent'),
-    FieldPanel('name'),
-    FieldPanel('slug'),
-    FieldPanel('active'),
-    InlinePanel(ProjectCategory, 'default_metafields', label="Default MetaFields"),
-]
-register_snippet(ProjectCategory)
-
 class ProjectMetaField(Orderable):
     key = models.ForeignKey(PortfolioMetaFieldKey)
     value = models.CharField(max_length=255)
     project = ParentalKey('portfolio.Project',related_name='metafields')
 
-class Project(models.Model):
-    title = models.CharField(_('title'), max_length=255)
-    slug = models.SlugField(_('slug'), max_length=255)
+class Project(Page):
     description = RichTextField(blank=True)
-
-    category = models.ForeignKey(ProjectCategory)
 
     indexed_fields = ('description', ) 
     # possibly "metafields.list('values')" (a callable to return list of values)
     # or create some other Project function -- look at how wagtail does tag indexing
 
-    def __unicode__(self):
-        return self.title or u'untitled project'
+    def __init__(self, *args, **kwargs):
+        parent = kwargs.pop('parent')
+        super(Project, self).__init__(*args, **kwargs)
+        self.metafields = [ ProjectMetaField(key=metafieldkey) \
+        for metafieldkey in \
+        PortfolioMetaFieldKey.objects.filter(pk__in=parent.default_metafields.all().values_list('key',flat=True)) ]
 
-    def get_absolute_url(self):
-        return reverse('portfolio_project_detail', args=(), kwargs={ # ('PortfolioProjectDetail.as_view', (), {
-            'category_slug': '/'.join(self.category.get_ancestors(include_self=True).values_list('slug',flat=True)),
-            'project_slug': self.slug
-        })
 
-Project.panels = [
-    FieldPanel('title'),
-    FieldPanel('slug'),
+Project.content_panels = [
+    FieldPanel('title', classname="full title"),
     FieldPanel('description'),
-    FieldPanel('category'),
     InlinePanel(Project, 'metafields', label="MetaFields"),
     InlinePanel(Project, 'images', label="Images"),
 ]
 
-register_snippet(Project)
+class ProjectCategory(Page):
+    class Meta:
+        verbose_name_plural = 'Portfolio Categories'
+
+    subpage_types = ['portfolio.Project']
+
+ProjectCategory.content_panels = [
+    FieldPanel('title', classname="full title"),
+    InlinePanel(ProjectCategory, 'default_metafields', label="Default MetaFields"),
+]
