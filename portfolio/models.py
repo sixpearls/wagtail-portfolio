@@ -19,17 +19,13 @@ from wagtail.wagtailsnippets.models import register_snippet
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from taggit.models import Tag, TaggedItemBase
-from categories.models import CategoryBase
 
 class ProjectImage(Orderable):
     project = ParentalKey('portfolio.Project',related_name='images')
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,related_name='+')
+
+    def __unicode__(self):
+        return self.project.__unicode__() + u'\'s ' + self.image.__unicode__() + u' image'
 
     panels = [
         ImageChooserPanel('image'),
@@ -70,15 +66,15 @@ class Project(Page):
     # or create some other Project function -- look at how wagtail does tag indexing
 
     def __init__(self, *args, **kwargs):
-        parent = kwargs.pop('parent')
+        parent = kwargs.pop('parent',None)
         super(Project, self).__init__(*args, **kwargs)
-        self.metafields = [ ProjectMetaField(key=metafieldkey) \
-        for metafieldkey in \
-        PortfolioMetaFieldKey.objects.filter(pk__in=parent.default_metafields.all().values_list('key',flat=True)) ]
+        if parent is not None:
+            self.metafields = [ ProjectMetaField(key=metafieldkey) \
+            for metafieldkey in \
+            PortfolioMetaFieldKey.objects.filter(pk__in=parent.default_metafields.all().values_list('key',flat=True)) ]
 
 
-Project.content_panels = [
-    FieldPanel('title', classname="full title"),
+Project.content_panels = Page.content_panels + [
     FieldPanel('description'),
     InlinePanel(Project, 'metafields', label="MetaFields"),
     InlinePanel(Project, 'images', label="Images"),
@@ -90,7 +86,10 @@ class ProjectCategory(Page):
 
     subpage_types = ['portfolio.Project']
 
-ProjectCategory.content_panels = [
-    FieldPanel('title', classname="full title"),
+ProjectCategory.content_panels = Page.content_panels + [
     InlinePanel(ProjectCategory, 'default_metafields', label="Default MetaFields"),
 ]
+
+class ProjectCategoryIndex(Page):
+    subpage_types = ['portfolio.ProjectCategory']
+    template = "portfolio/index.html"

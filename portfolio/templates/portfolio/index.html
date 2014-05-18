@@ -1,0 +1,18 @@
+{% extends 'wagtailcore/page.html' %}
+
+{% load pageurl %}
+
+{% block content %}
+<ul class="category_list">
+{% for category in self.get_children %}
+<li>{{ category.title }}
+    <ul class="project_list">
+        {% for project in category.get_children %}
+        {% block project_html %}<li><a href="{% pageurl project %}">{{ project.title }}</a></li>{% endblock %}
+        {% endfor %}
+    </ul>
+</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

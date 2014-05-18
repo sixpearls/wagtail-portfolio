@@ -1,3 +1,24 @@
-{% extends 'base.html' %}
+{% extends 'wagtailcore/page.html' %}
+{% load image_tags %}
 
-Project
+{% block content %}
+<header>
+<h1>{{ self.title }}</h1>
+
+<dl class="metafields">
+{% for metafield in self.metafields.all %}
+<dt>{{ metafield.key.text }}</dt>
+<dd>{{metafield.value }}</dd>
+{% endfor %}
+</dl>
+</header>
+
+<ul class="portfolio_gallery">
+{% for image in self.images.all %}
+<li>{% image image.image max-320x320 %}</li>
+{% endfor %}
+</ul>
+
+{{ self.description|safe }}
+
+{% endblock %}
