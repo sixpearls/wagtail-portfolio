@@ -44,10 +44,13 @@ register_snippet(PortfolioMetaFieldKey)
 
 class ProjectCategoryMetaFieldDefaultKeys(Orderable):
     category = ParentalKey('portfolio.ProjectCategory',related_name='default_metafields')
-    key = models.ForeignKey(PortfolioMetaFieldKey)
+    key = models.ForeignKey(PortfolioMetaFieldKey,related_name="default_to")
 
     class Meta:
         verbose_name_plural = "Portfolio Default MetaKeys"
+
+    def __unicode__(self):
+        return self.category.__unicode__() + u'\'s default key ' + self.key.__unicode__()
 
     panels=[
         SnippetChooserPanel('key', PortfolioMetaFieldKey),
@@ -57,6 +60,9 @@ class ProjectMetaField(Orderable):
     key = models.ForeignKey(PortfolioMetaFieldKey)
     value = models.CharField(max_length=255)
     project = ParentalKey('portfolio.Project',related_name='metafields')
+
+    def __unicode__(self):
+        return self.project.__unicode__() + u'\'s ' + self.key.__unicode__() + u': ' + self.value
 
 class Project(Page):
     description = RichTextField(blank=True)
@@ -71,7 +77,7 @@ class Project(Page):
         if parent is not None:
             self.metafields = [ ProjectMetaField(key=metafieldkey) \
             for metafieldkey in \
-            PortfolioMetaFieldKey.objects.filter(pk__in=parent.default_metafields.all().values_list('key',flat=True)) ]
+            PortfolioMetaFieldKey.objects.filter(default_to__category=parent).order_by('default_to__sort_order') ]
 
 
 Project.content_panels = Page.content_panels + [
