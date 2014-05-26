@@ -25,6 +25,10 @@ class ProjectImage(Orderable):
     image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,related_name='+')
     caption = RichTextField(blank=True)
 
+    @property
+    def get_ratio(self):
+        return (1.0*self.image.height / self.image.width)
+
     def __unicode__(self):
         return self.project.__unicode__() + u'\'s ' + self.image.__unicode__() + u' image'
 
