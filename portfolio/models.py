@@ -23,6 +23,7 @@ from taggit.models import Tag, TaggedItemBase
 class ProjectImage(Orderable):
     project = ParentalKey('portfolio.Project',related_name='images')
     image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,related_name='+')
+    caption = RichTextField(blank=True)
 
     def __unicode__(self):
         return self.project.__unicode__() + u'\'s ' + self.image.__unicode__() + u' image'
