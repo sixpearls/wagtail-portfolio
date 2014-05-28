@@ -1,8 +1,9 @@
 {% extends 'wagtailcore/page.html' %}
-{% load image_tags %}
+{% load image_tags rich_text pageurl %}
 
 {% block content %}
 <header>
+{% with parent=self.get_parent %}<a href="{% pageurl parent %}">{{ parent.title }}</a>{% endwith %}
 <h1>{{ self.title }}</h1>
 </header>
 
@@ -31,7 +32,7 @@
 </dl>
 
 <div id="description">
-{{ self.description|safe }}
+{{ self.description|richtext }}
 </div>
 
 {% endblock %}

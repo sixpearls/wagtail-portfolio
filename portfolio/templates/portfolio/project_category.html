@@ -1,12 +1,12 @@
 {% extends 'wagtailcore/page.html' %}
 
-{% load pageurl %}
+{% load pageurl image_tags %}
 
 {% block content %}
 <h3>{{ self.title }}</h3>
-<ul class="project_list">
+<ul id="project_list">
     {% for project in self.get_children %}
-    {% block project_html %}<li><a href="{% pageurl project %}">{{ project.title }}</a></li>{% endblock %}
+    <li class="image"><a href="{% pageurl project %}" title="{{ project.title }}">{% image project.specific.images.all.0.image max-320x320 %}</a></li>
     {% endfor %}
 </ul>
 {% endblock %}
