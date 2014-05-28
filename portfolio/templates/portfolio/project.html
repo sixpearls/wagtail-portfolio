@@ -13,7 +13,7 @@
 {% for image in self.images.all %}
 {% image image.image max-220x220 as thumb %} {% image image.image max-700x525 as full %}
 <li>
-    <a class="thumb {% if image.get_ratio < 0.75 %}landscape{% else %}portrait{% endif %}" orientation="{% if image.get_ratio < 0.75 %}landscape{% else %}portrait{% endif %}" href="{{ full.url }}" title="{{ image.image.title }}">{{ thumb.img_tag }}</a>
+    <a class="thumb {% if image.get_ratio <= 0.75 %}landscape{% else %}portrait{% endif %}" orientation="{% if image.get_ratio <= 0.75 %}landscape{% else %}portrait{% endif %}" href="{{ full.url }}" title="{{ image.image.title }}">{{ thumb.img_tag }}</a>
     <div class="caption">{{ image.caption|safe }}</div>
 </li>
 {% endfor %}
@@ -68,19 +68,20 @@ jQuery(document).ready(function($) {
         onSlideChange:             undefined, // accepts a delegate like such: function(prevIndex, nextIndex) { ... }
         onTransitionOut:           undefined, // accepts a delegate like such: function(slide, caption, isSync, callback) { ... }
         onTransitionIn:            function(slide,caption,isSync) {
-            var gal = this;
-            slide.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0, function() {
-                var img = gal.$imageContainer.find('img');
-                if ($(gal.find("ul.thumbs").children().get(gal.currentImage.index)).find('a').attr('orientation') == "portrait") {
-                    img.addClass("portrait").removeClass("landscape");
-                } else {
-                    img.addClass("landscape").removeClass("portrait");
-                }
-            });
-            if (caption)
+            var img = this.$imageContainer.find('img');
+            if ($(this.find("ul.thumbs").children().get(this.currentImage.index)).find('a').attr('orientation') == "portrait") {
+                img.addClass("portrait").removeClass("landscape");
+            } else {
+                img.addClass("landscape").removeClass("portrait");
+            }
+
+            slide.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0);
+
+            if (caption) {
                 caption.css('position','absolute').css('top','0').fadeTo(this.getDefaultTransitionDuration(isSync), 1.0, function() {
                     caption.css('position','relative');
                 });
+            }
         }, // accepts a delegate like such: function(slide, caption, isSync) { ... }
         onPageTransitionOut:       undefined, // accepts a delegate like such: function(callback) { ... }
         onPageTransitionIn:        undefined, // accepts a delegate like such: function() { ... }
