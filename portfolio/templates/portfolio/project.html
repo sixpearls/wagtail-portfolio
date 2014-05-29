@@ -68,7 +68,7 @@ jQuery(document).ready(function($) {
         onSlideChange:             undefined, // accepts a delegate like such: function(prevIndex, nextIndex) { ... }
         onTransitionOut:           undefined, // accepts a delegate like such: function(slide, caption, isSync, callback) { ... }
         onTransitionIn:            function(slide,caption,isSync) {
-            var img = this.$imageContainer.find('img');
+            var img = slide.find('img');
             if ($(this.find("ul.thumbs").children().get(this.currentImage.index)).find('a').attr('orientation') == "portrait") {
                 img.addClass("portrait").removeClass("landscape");
             } else {
