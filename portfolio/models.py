@@ -16,6 +16,9 @@ from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
 
+from django.dispatch import receiver
+from wagtail.wagtailadmin.signals import init_new_page
+
 from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from taggit.models import Tag, TaggedItemBase
@@ -76,15 +79,6 @@ class Project(Page):
     # possibly "metafields.list('values')" (a callable to return list of values)
     # or create some other Project function -- look at how wagtail does tag indexing
 
-    def __init__(self, *args, **kwargs):
-        parent = kwargs.pop('parent',None)
-        super(Project, self).__init__(*args, **kwargs)
-        if parent is not None:
-            self.metafields = [ ProjectMetaField(key=metafieldkey) \
-            for metafieldkey in \
-            PortfolioMetaFieldKey.objects.filter(default_to__category=parent).order_by('default_to__sort_order') ]
-
-
 Project.content_panels = Page.content_panels + [
     FieldPanel('description'),
     InlinePanel(Project, 'metafields', label="MetaFields"),
@@ -104,3 +98,12 @@ ProjectCategory.content_panels = Page.content_panels + [
 class ProjectCategoryIndex(Page):
     subpage_types = ['portfolio.ProjectCategory']
     template = "portfolio/index.html"
+
+@receiver(init_new_page)
+def populate_metafields(sender, **kwargs):
+    page = kwargs.pop('page', None)
+    parent = kwargs.pop('parent',None)
+    if parent is not None and page is not None:
+        page.metafields = [ ProjectMetaField(key=metafieldkey) \
+        for metafieldkey in \
+        PortfolioMetaFieldKey.objects.filter(default_to__category=parent).order_by('default_to__sort_order') ]
