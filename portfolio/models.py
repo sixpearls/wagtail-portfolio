@@ -26,7 +26,7 @@ from taggit.models import Tag, TaggedItemBase
 class ProjectImage(Orderable):
     project = ParentalKey('portfolio.Project',related_name='images')
     image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,related_name='+')
-    caption = RichTextField(blank=True)
+    caption = models.TextField(blank=True)
 
     @property
     def get_ratio(self):
@@ -80,7 +80,7 @@ class Project(Page):
     # or create some other Project function -- look at how wagtail does tag indexing
 
 Project.content_panels = Page.content_panels + [
-    FieldPanel('description'),
+    FieldPanel('description', classname="full"),
     InlinePanel(Project, 'metafields', label="MetaFields"),
     InlinePanel(Project, 'images', label="Images"),
 ]
