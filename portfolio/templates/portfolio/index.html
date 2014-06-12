@@ -4,10 +4,10 @@
 
 {% block content %}
 <ul class="category_list">
-{% for category in self.get_children %}
+{% for category in self.get_children.live %}
 <li><h3><a href="{% pageurl category %}">{{ category.title }}</a></h3>
     <ul class="project_list">
-        {% for project in category.get_children %}
+        {% for project in category.get_children.live %}
         {% block project_html %}<li><a href="{% pageurl project %}">{{ project.title }}</a></li>{% endblock %}
         {% endfor %}
     </ul>
