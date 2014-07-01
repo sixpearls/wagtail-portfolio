@@ -3,7 +3,7 @@
 
 {% block content %}
 <header>
-{% with parent=self.get_parent %}<a href="{% pageurl parent %}">{{ parent.title }}</a>{% endwith %}
+{% with parent=self.get_parent %}<a href="{% pageurl parent %}">&larr;{{ parent.title }}</a>{% endwith %}
 <h1>{{ self.title }}</h1>
 </header>
 
@@ -42,7 +42,7 @@
 <script>
 jQuery(document).ready(function($) {
     var gallery = $('#thumbs').galleriffic({
-        delay:                     2000, // in milliseconds
+        delay:                     2500, // in milliseconds
         numThumbs:                 20, // The number of thumbnails to show page
         preloadAhead:              40, // Set to -1 to preload all images
         enableTopPager:            false,

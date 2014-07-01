@@ -102,8 +102,9 @@ class ProjectCategoryIndex(Page):
 @receiver(init_new_page)
 def populate_metafields(sender, **kwargs):
     page = kwargs.pop('page', None)
-    parent = kwargs.pop('parent',None)
-    if parent is not None and page is not None:
-        page.metafields = [ ProjectMetaField(key=metafieldkey) \
-        for metafieldkey in \
-        PortfolioMetaFieldKey.objects.filter(default_to__category=parent).order_by('default_to__sort_order') ]
+    if isinstance(page, Project):
+        parent = kwargs.pop('parent',None)
+        if parent is not None and page is not None:
+            page.metafields = [ ProjectMetaField(key=metafieldkey) \
+            for metafieldkey in \
+            PortfolioMetaFieldKey.objects.filter(default_to__category=parent).order_by('default_to__sort_order') ]
