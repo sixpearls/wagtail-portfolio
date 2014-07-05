@@ -3,7 +3,11 @@
 {% load pageurl image_tags %}
 
 {% block content %}
-<h3>{{ self.title }}</h3>
+<header>
+{% with parent=self.get_parent %}<a href="{% pageurl parent %}">&larr;{{ parent.title }}</a>{% endwith %}
+<h1>{{ self.title }}</h1>
+</header>
+
 <ul id="project_list">
     {% for project in self.get_children.live %}
     <li class="image"><a href="{% pageurl project %}" title="{{ project.title }}">{% image project.specific.images.all.0.image max-320x320 %}</a></li>
