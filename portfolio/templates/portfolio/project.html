@@ -7,6 +7,7 @@
 <h1>{{ self.title }}</h1>
 </header>
 
+{% if self.images.all %}
 <div id="controls"></div>
 <div id="thumbs">
     <ul class="thumbs noscript">
@@ -23,13 +24,15 @@
 <div id="slideshow"></div>
 
 <div id="caption"></div>
-
+{% endif %}
+{% if self.metafields.all %}
 <dl id="metafields">
 {% for metafield in self.metafields.all %}
 <dt>{{ metafield.key.text }}</dt>
 <dd>{{ metafield.value }}</dd>
 {% endfor %}
 </dl>
+{% endif %}
 
 <div id="description">
 {{ self.description|richtext }}
@@ -39,6 +42,7 @@
 
 {% block javascript %}
 <script type="text/javascript" src="{{ STATIC_URL }}portfolio/jquery.galleriffic.js"></script>
+{% if self.images.all %}
 <script>
 jQuery(document).ready(function($) {
     var gallery = $('#thumbs').galleriffic({
@@ -90,4 +94,5 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
+{% endif %}
 {% endblock %}
